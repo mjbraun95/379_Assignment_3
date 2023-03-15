@@ -6,6 +6,7 @@
         "stat.h": "c",
         "types.h": "c",
         "unistd.h": "c",
-        "in.h": "c"
+        "in.h": "c",
+        "socket.h": "c"
     }
 }

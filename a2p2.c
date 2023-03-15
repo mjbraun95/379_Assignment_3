@@ -56,10 +56,7 @@ Packet receive_packet (int fd)
     return packet;		  
 }
 
-void remove_new_line(char* str) {
-    size_t len_str = strcspn(str, "\n");
-    str[len_str] = '\0';
-}
+
 
 //Contains modified code from fifoMsg.c on eClass
 void spawn_client(int *fifo_cs_fd, int *fifo_sc_fd, char* client_ID, char* input_file) {

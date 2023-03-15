@@ -29,9 +29,8 @@
 // TODO: Implement getaddrinfo for symbolic name support 
 
 // Define structs
-typedef enum {
-    // TODO: Implement later 
-    // HELLO,
+typedef enum { 
+    HELLO,
     PUT, 
     GET, 
     DELETE, 
@@ -149,7 +148,6 @@ int main(int argc, char *argv[]) {
         }
 
         // TODO: Initialize array of client_info structs
-// ###################################################### SERVER
 
 
         // launch_server() code from assignment 2
@@ -189,39 +187,26 @@ int main(int argc, char *argv[]) {
                 {
                     // Event received
                     printf("Event received from client[%d]\n", idNumber);
-// ###################################################### SERVER
 
                     // Choose corresponding FIFO
-                    Packet received_packet, server_reply_packet;
-                    Packet_Type server_reply_packet_type;
-                    Message server_reply_message;
-
+                    Packet received_packet;
                     int active_cs_fifo;
                     int active_sc_fifo;
-                    if (idNumber > NCLIENT || idNumber <= 0) {
-                        perror("Error: Invalid idNumber (server)\n");
-                    }
+                    if (idNumber > NCLIENT || idNumber <= 0) perror("Error: Invalid idNumber (server)\n");
                     // if (idNumber == 1) received_packet = receive_packet(fifo_c1_s_fd);
                     // if (idNumber == 2) received_packet = receive_packet(fifo_c2_s_fd);
                     // if (idNumber == 3) received_packet = receive_packet(fifo_c3_s_fd);
-                    if (idNumber == 1) {
-                        active_cs_fifo = fifo_c1_s_fd; active_sc_fifo = fifo_s_c1_fd;
-                    } else if (idNumber == 2) {
-                        active_cs_fifo = fifo_c2_s_fd; active_sc_fifo = fifo_s_c2_fd;
-                    } else if (idNumber == 3) {
-                        active_cs_fifo = fifo_c3_s_fd; active_sc_fifo = fifo_s_c3_fd;
-                    } else {
-                        perror("Error: Invalid idNumber (server)\n");
-                    }
+                    if (idNumber == 1) {active_cs_fifo = fifo_c1_s_fd; active_sc_fifo = fifo_s_c1_fd;}
+                    if (idNumber == 2) {active_cs_fifo = fifo_c2_s_fd; active_sc_fifo = fifo_s_c2_fd;}
+                    if (idNumber == 3) {active_cs_fifo = fifo_c3_s_fd; active_sc_fifo = fifo_s_c3_fd;}
                     received_packet = receive_packet(active_cs_fifo);
                     Packet_Type received_type = received_packet.packet_type;
                     Message received_message = received_packet.message;
-                    printf("  debug: Packet type: %d\n", received_type);
+                    printf("  debug: Packet type: %s\n", received_type);
                     printf("  debug: Message: %s\n", received_message.message);
                     char target_path_server[MAXPATH] = "server_directory/";
                     char target_path_client[MAXPATH] = "client_directory/";
                     
-// ###################################################### SERVER
                     if (received_type == PUT) {
                         // PUT: Client upload
                         char *file_name = process_message(received_message);
@@ -257,20 +242,7 @@ int main(int argc, char *argv[]) {
                     } else if (received_type == GTIME) {
                         clock_t end_time = clock();
                         double time_since_server_start = (((double) (end_time - start_time)) / CLOCKS_PER_SEC * 1000.0);
-                        server_reply_packet_type = OK;
-                        // TODO!: Send a packet back to the client
-// ###################################################### SERVER
-
-                        char reply[BUFSIZ];
-                        // Convert double to string
-                        sprintf(reply, "%f", time_since_server_start);
-                        // TODO? Format this message a different way or call the "Transmitted" part somewhere else?
-                        // sprintf(reply, "Transmitted (src= server) (TIME: %d)\n", time_since_server_start);
-                        server_reply_packet_type = OK;
-                        strcpy(server_reply_message.message, reply);
-
-
-                        send_packet(active_sc_fifo, server_reply_packet_type, reply);
+                        printf("Transmitted (src= server) (TIME: %d)\n", time_since_server_start);
                     } else {
                         perror("Error: Invalid received packet type (index)\n");    
                     }
@@ -324,7 +296,6 @@ int main(int argc, char *argv[]) {
         while (fgets(packet_buffer, BUFSIZE, fp) != NULL) {
             Packet_Type packet_type;
             Message message;
-// ###################################################### CLIENT
 
             // Check for # lines
             if (packet_buffer[0] == '#') {
@@ -360,13 +331,9 @@ int main(int argc, char *argv[]) {
             else if (strcmp(arg2, "delay") == 0) sleep(atoi(arg3)/1000);
             else if (strcmp(arg2, "quit") == 0) break;
             else perror("Error: Invalid arg2 in client\n");
-// ###################################################### CLIENT
 
             // Assign message
-            if (packet_type != PUT && packet_type != GET && packet_type != DELETE && packet_type != GTIME) {
-                // No packets sent for delay case
-                continue;
-            }
+            if (packet_type != PUT && packet_type != GET && packet_type != DELETE && packet_type != GTIME) continue; // No packets sent for delay case
             if (packet_type == PUT || packet_type == GET || packet_type == DELETE) {
                 // Load object into message
                 strcpy(message.message, arg3);
@@ -374,7 +341,7 @@ int main(int argc, char *argv[]) {
 
             // Send packet
             send_packet(fifo_cs_fd, packet_type, &message);
-            printf("Transmitted (src= client:%d) %d\n", idNumber, packet_type);
+            printf("Transmitted (src= client:%s) %s\n", idNumber, packet_type);
 
             while (1) {
                 int num_events = poll(client_rcv_fds, 1, timeout);
@@ -398,6 +365,5 @@ int main(int argc, char *argv[]) {
         
         return EXIT_SUCCESS;
         }
-// ###################################################### CLIENT
     
 }
