@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "errno.h": "c",
+        "assert.h": "c",
+        "stat.h": "c",
+        "types.h": "c",
+        "unistd.h": "c",
+        "in.h": "c"
+    }
+}
