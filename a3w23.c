@@ -171,6 +171,7 @@ int main(int argc, char *argv[]) {
         // Initialize pollfd array to receive from all potential clients
         struct pollfd pollfds[NCLIENT+1];
         for (int i = 1; i < NCLIENT+1; i++) {
+            // TODO: add stdin
             pollfds[i].fd = fifo_fds[i-1];
             pollfds[i].events = POLLIN;
             pollfds[i].revents = 0;
@@ -201,15 +202,15 @@ int main(int argc, char *argv[]) {
                     if (idNumber > NCLIENT || idNumber <= 0) {
                         perror("Error: Invalid idNumber (server)\n");
                     }
-                    // if (idNumber == 1) received_packet = receive_packet(fifo_c1_s_fd);
-                    // if (idNumber == 2) received_packet = receive_packet(fifo_c2_s_fd);
-                    // if (idNumber == 3) received_packet = receive_packet(fifo_c3_s_fd);
                     if (idNumber == 1) {
-                        active_cs_fifo = fifo_c1_s_fd; active_sc_fifo = fifo_s_c1_fd;
+                        active_cs_fifo = fifo_c1_s_fd; 
+                        active_sc_fifo = fifo_s_c1_fd;
                     } else if (idNumber == 2) {
-                        active_cs_fifo = fifo_c2_s_fd; active_sc_fifo = fifo_s_c2_fd;
+                        active_cs_fifo = fifo_c2_s_fd; 
+                        active_sc_fifo = fifo_s_c2_fd;
                     } else if (idNumber == 3) {
-                        active_cs_fifo = fifo_c3_s_fd; active_sc_fifo = fifo_s_c3_fd;
+                        active_cs_fifo = fifo_c3_s_fd; 
+                        active_sc_fifo = fifo_s_c3_fd;
                     } else {
                         perror("Error: Invalid idNumber (server)\n");
                     }
@@ -276,6 +277,7 @@ int main(int argc, char *argv[]) {
                     }
                 }	
             }
+            // TODO: Check POLLIN for stdin after for loop
         }
 // ###################################################### CLIENT
     } else if (strcmp(argv[1], "-c") == 0) {
@@ -353,13 +355,27 @@ int main(int argc, char *argv[]) {
                 arg2[i] = tolower(arg2[i]);
                 i++;
             }
-            if (strcmp(arg2, "put") == 0) packet_type = PUT;
-            else if (strcmp(arg2, "get") == 0) packet_type = GET;
-            else if (strcmp(arg2, "delete") == 0) packet_type = DELETE;              
-            else if (strcmp(arg2, "gtime") == 0) packet_type = GTIME;
-            else if (strcmp(arg2, "delay") == 0) sleep(atoi(arg3)/1000);
-            else if (strcmp(arg2, "quit") == 0) break;
-            else perror("Error: Invalid arg2 in client\n");
+            if (strcmp(arg2, "put") == 0) {
+                packet_type = PUT;
+            }
+            else if (strcmp(arg2, "get") == 0) {
+                packet_type = GET;
+            }
+            else if (strcmp(arg2, "delete") == 0) {
+                packet_type = DELETE;              
+            }
+            else if (strcmp(arg2, "gtime") == 0) {
+                packet_type = GTIME;
+            }
+            else if (strcmp(arg2, "delay") == 0) {
+                sleep(atoi(arg3)/1000);
+            }
+            else if (strcmp(arg2, "quit") == 0) {
+                break;
+            }
+            else {
+                perror("Error: Invalid arg2 in client\n");
+            }
 // ###################################################### CLIENT
 
             // Assign message
@@ -397,7 +413,7 @@ int main(int argc, char *argv[]) {
         close(fifo_sc_fd);
         
         return EXIT_SUCCESS;
-        }
+    }
 // ###################################################### CLIENT
     
 }
